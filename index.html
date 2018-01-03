@@ -7,7 +7,7 @@
 		<title>reveal.js</title>
 
 		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css">
+		<link rel="stylesheet" href="css/theme/white.css">
 
 		<!-- Theme used for syntax highlighting of code -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
@@ -24,8 +24,178 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+                <section><h1>Intro to Terraform</h1></section>
+                <section>
+                    <p>Terraform is a declarative language and set of tools for defining infrastructure in code</p>
+                </section>
+                <section>
+                    <h1>Declarative</h1>
+                    <h3>What, instead of How</h3>
+                </section>
+				<section>
+                    <section>
+                        <h2>Building blocks</h2>
+                    </section>
+                    <section>
+                        <h2>Providers</h2>
+                        <p>Initial configuration to tell terraform how to work with your service</p>
+                        <p><a href="https://www.terraform.io/docs/configuration/providers.html">https://www.terraform.io/docs/configuration/providers.html</a></p>
+                    </section>
+                    <section>
+                        <h2>Resources</h2>
+                        <p>Build your resources in repeatable, declarative syntax</p>
+                        <p><a href="https://www.terraform.io/docs/configuration/resources.html">https://www.terraform.io/docs/configuration/resources.html</a></p>
+                    </section>
+                    <section>
+                        <h2>Variables</h2>
+                        <p>Define dynamic values that can be passed in at run-time, or defined as reasonable defaults</p>
+                        <p><a href="https://www.terraform.io/docs/configuration/variables.html">https://www.terraform.io/docs/configuration/variables.html</a></p>
+                    </section>
+                    <section>
+                        <h2>Data Sources</h2>
+                        <p>Need the ID of an existing resource? Look it up</p>
+                        <p><a href="https://www.terraform.io/docs/configuration/data-sources.html">https://www.terraform.io/docs/configuration/data-sources.html</a></p>
+                    </section>
+                    <section>
+                        <h2>Outputs</h2>
+                        <p>Expose values from your module, or remotely to other stacks</p>
+                        <p><a href="https://www.terraform.io/docs/configuration/outputs.html">https://www.terraform.io/docs/configuration/outputs.html</a></p>
+                    </section>
+                    <section>
+                        <h2>Interpolation Functions</h2>
+                        <p>Do programmey type stuff</p>
+                        <p><a href="https://www.terraform.io/docs/configuration/interpolation.html">https://www.terraform.io/docs/configuration/interpolation.html</a></p>
+                    </section>
+                </section>
+                <section>
+                    <h2>Configuration Syntax</h2>
+                    <p><a href="https://www.terraform.io/docs/configuration/syntax.html">https://www.terraform.io/docs/configuration/syntax.html</a>
+                </section>
+                <section>
+                    <section>
+                        <h2>Breakdown: Providers</h2>
+                    </section>
+                    <section>
+                        <pre><code>provider "aws" {</code></pre>
+                    </section>
+                    <section>
+                        <pre><code>provider "aws" {
+  access_key = "foo"
+  secret_key = "bar"
+  region     = "us-east-1"
+}</code></pre>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>Breakdown: Resources</h2>
+                    </section>
+                    <section>
+                        <pre><code>resource "aws_instance"</code></pre>
+                    </section>
+                    <section>
+                        <pre><code>resource "aws_instance" "web" {</code></pre>
+                    </section>
+                    <section>
+                        <pre><code>resource "aws_instance" "web" {
+    ami             = "ami-408c7f28"
+    instance_type   = "t1.micro"
+    key_name        = "chalovich"
+}</code></pre>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>Breakdown: Variables</h2>
+                    </section>
+                    <section>
+                        <pre><code>variable "ami_id" {</code></pre>
+                    </section>
+                    <section>
+                        <h2>String</h2>
+                        <pre><code>variable "ami_id" {
+    type = "string"
+    default = "ami-408c7f28"
+}</code></pre>
+                    </section>
+                    <section>
+                        <h2>List</h2>
+                        <pre><code>variable "accounts" {
+    type = "list"
+    default = [
+        "111111111",
+        "222222222",
+        "333333333"
+    ]
+}</code></pre>
+                    </section>
+                    <section>
+                        <h2>Map</h2>
+                        <pre><code>variable "accounts" {
+    type = "map"
+    default = {
+        ts = "111111111"
+        bs = "222222222"
+        nt = "333333333"
+    }
+}</code></pre>
+                    </section>
+                </section>
+                <section>
+                    <section>
+                        <h2>Breakdown: Data Sources</h2>
+                    </section>
+                    <section>
+                        <pre><code>data "aws_vpc"</code></pre>
+                    </section>
+                    <section>
+                        <pre><code>data "aws_vpc" "neat" {</code></pre>
+                    </section>
+                    <section>
+                        <h2>Lookup:</h2>
+                        <pre><code>data "aws_vpc" "neat" {
+    id = "${var.vpc_id}"
+}</code></pre>
+                        <h2>Use:</h2>
+                        <pre><code data-trim data-noescape>resource "aws_subnet" "web" {
+    vpc_id = <mark>"${data.aws_vpc.neat.id}"</mark>
+    cidr_block = "${var.cidr_block}"
+}</code></pre>
+                    </section>
+                </section>
+                <section>
+                    <h1>State</h1>
+                    <p>Terraform stores the metadata about your instances in a state file</p>
+                </section>
+                <section>
+                    <h1>Backends</h1>
+                    <p>You can store your state in a remote backend, and retrieve it for other projects</p>
+                </section>
+                <section>
+                    <section>
+                        <h2>Breakdown: Remote State</h2>
+                    </section>
+                    <section>
+                        <pre><code>data "terraform_remote_state"</code></pre>
+                    </section>
+                    <section>
+                        <pre><code>data "terraform_remote_state" "aws" {</code></pre>
+                    </section>
+                    <section>
+                        <pre><code>data "terraform_remote_state" "aws" {
+    backend = "s3"</pre></code>
+                    </section>
+                    <section>
+                        <pre><code>data "terraform_remote_state" "aws" {
+    backend = "s3"
+    config {
+        bucket  = "tfstate.us-west-2.s3.bcaa.com"
+        key     = "mystatefile"
+        region  = "us-west-2"
+    }
+}</code></pre>
+                    </section>
+                </section>
 			</div>
 		</div>
 
